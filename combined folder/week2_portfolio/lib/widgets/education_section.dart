@@ -45,7 +45,7 @@ class EducationSection extends StatelessWidget {
                               '${edu.degree} (${edu.year})',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[700],
+                                color: Colors.purpleAccent[700],
                               ),
                             ),
                           ],

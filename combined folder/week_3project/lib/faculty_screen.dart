@@ -8,7 +8,7 @@ class FacultyScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Faculty Directory')),
       body: ListView.builder(
-        itemCount: 5,
+        itemCount: 10,
         itemBuilder: (context, index) {
           return Card(
             margin: const EdgeInsets.all(8),
