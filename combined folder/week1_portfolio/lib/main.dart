@@ -28,7 +28,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: Colors.green),
+        textTheme: TextTheme(
+          headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+        ),
       ),
       home: const MyHomePage(title: 'INFT 425- [Sean Obiri-Yeboah]'),
     );
@@ -67,6 +70,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _decrement() {
+    setState(() {
+      if (_counter > 0) _counter--;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -80,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.blueGrey,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -112,10 +121,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: "increase",
+            onPressed: _incrementCounter,
+            tooltip: "increase",
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            heroTag: "decrease",
+            onPressed: _decrement,
+            tooltip: "decrease",
+            child: const Icon(Icons.remove),
+          ),
+        ],
       ),
     );
   }
