@@ -39,7 +39,7 @@ class DepartmentsScreen extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 '/department/detail',
-                arguments: {'name': 'Computer Engineering'},
+                arguments: {'name': 'Computer Science'},
               );
             },
           ),
@@ -51,7 +51,7 @@ class DepartmentsScreen extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 '/department/detail',
-                arguments: {'name': 'Business'},
+                arguments: {'name': 'Computer Science'},
               );
             },
           ),
