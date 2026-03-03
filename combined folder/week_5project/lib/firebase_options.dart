@@ -46,8 +46,6 @@ class DefaultFirebaseOptions {
   );
 
   static FirebaseOptions get currentPlatform {
-    // Return the appropriate options based on the platform
-    // This will be determined by the Flutter framework at runtime
     return web; // Default fallback
   }
 }
