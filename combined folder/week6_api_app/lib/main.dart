@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ArticleViewModel()..loadArticles(),
+      create: (context) => ArticleViewModel()..loadData(),
       child: MaterialApp(
         title: 'API Consumer App',
         theme: ThemeData(primarySwatch: Colors.orange),
