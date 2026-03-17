@@ -19,6 +19,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   @override
   void initState() {
     super.initState();
+    _tasks = List.from(widget.tasks); // Initialize with passed tasks
     _loadTasks();
   }
 
@@ -31,10 +32,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
       setState(() {
         _tasks = tasksList.map((taskJson) => Task.fromJson(taskJson)).toList();
       });
-    } else {
-      // Use the passed tasks as fallback (hardcoded list)
-      _tasks = List.from(widget.tasks);
     }
+    // If no saved tasks, keep the initial _tasks from widget.tasks
   }
 
   Future<void> _saveTasks() async {
