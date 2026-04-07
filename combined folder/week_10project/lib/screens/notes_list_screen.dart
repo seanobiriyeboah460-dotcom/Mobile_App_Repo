@@ -9,7 +9,7 @@ class NotesListScreen extends StatefulWidget {
   const NotesListScreen({super.key});
 
   @override
-  _NotesListScreenState createState() => _NotesListScreenState();
+  State<NotesListScreen> createState() => _NotesListScreenState();
 }
 
 class _NotesListScreenState extends State<NotesListScreen> {
@@ -163,10 +163,12 @@ class _NotesListScreenState extends State<NotesListScreen> {
     AutoLockService.userActivity();
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => AddEditNoteScreen()),
+      MaterialPageRoute(
+        builder: (_) => AddEditNoteScreen(notesService: _notesService),
+      ),
     );
     if (result == true) {
-      setState(() {}); // refresh list (or use provider)
+      setState(() {}); // refresh list
     }
   }
 
@@ -174,7 +176,12 @@ class _NotesListScreenState extends State<NotesListScreen> {
     AutoLockService.userActivity();
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => AddEditNoteScreen(note: note)),
+      MaterialPageRoute(
+        builder: (_) => AddEditNoteScreen(
+          notesService: _notesService,
+          note: note,
+        ),
+      ),
     );
     if (result == true) {
       setState(() {});

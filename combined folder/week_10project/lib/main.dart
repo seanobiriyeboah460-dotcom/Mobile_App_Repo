@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'screens/auth_screen.dart';
 import 'services/auto_lock_service.dart';
 import 'services/theme_service.dart';

@@ -6,17 +6,17 @@ import '../services/notes_service.dart';
 
 class AddEditNoteScreen extends StatefulWidget {
   final Note? note;
+  final NotesService notesService;
 
-  const AddEditNoteScreen({super.key, this.note});
+  const AddEditNoteScreen({super.key, required this.notesService, this.note});
 
   @override
-  _AddEditNoteScreenState createState() => _AddEditNoteScreenState();
+  State<AddEditNoteScreen> createState() => _AddEditNoteScreenState();
 }
 
 class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
-  final NotesService _notesService = NotesService();
   bool _isSaving = false;
 
   @override
@@ -59,7 +59,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
         content: _contentController.text.trim(),
         lastEdited: now,
       );
-      await _notesService.updateNote(updatedNote);
+      await widget.notesService.updateNote(updatedNote);
     } else {
       final newNote = Note(
         id: now.millisecondsSinceEpoch.toString(),
@@ -67,10 +67,11 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
         content: _contentController.text.trim(),
         lastEdited: now,
       );
-      await _notesService.addNote(newNote);
+      await widget.notesService.addNote(newNote);
     }
 
     setState(() => _isSaving = false);
+    if (!mounted) return;
     Navigator.pop(context, true);
   }
 
