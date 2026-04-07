@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 class AuthScreen extends StatefulWidget {
+  const AuthScreen({super.key});
+
   @override
   _AuthScreenState createState() => _AuthScreenState();
 }
@@ -13,24 +15,33 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final BiometricService _biometricService = BiometricService();
   final TextEditingController _pinController = TextEditingController();
-  bool _isBiometricSupported = false;
+  bool _biometricAttempted = false;
+  bool _isBiometricAvailable = false;
+  String? _biometricError;
 
   @override
   void initState() {
     super.initState();
-    _checkBiometrics();
+    _initBiometrics();
   }
 
-  Future<void> _checkBiometrics() async {
-    final canCheck = await _biometricService.canCheckBiometrics();
-    setState(() => _isBiometricSupported = canCheck);
-    if (canCheck) {
-      _authenticateWithBiometrics();
+  Future<void> _initBiometrics() async {
+    final available = await _biometricService.isBiometricAvailable();
+    if (!mounted) return;
+    setState(() => _isBiometricAvailable = available);
+    if (available) {
+      await _authenticateWithBiometrics();
     }
   }
 
   Future<void> _authenticateWithBiometrics() async {
     final authenticated = await _biometricService.authenticate();
+    if (!mounted) return;
+    setState(() {
+      _biometricAttempted = true;
+      _biometricError =
+          authenticated ? null : 'Biometric unlock failed. Please try again.';
+    });
     if (authenticated) {
       Navigator.pushReplacement(
         context,
@@ -46,18 +57,18 @@ class _AuthScreenState extends State<AuthScreen> {
       _setupPin();
       return;
     }
-    final inputHash = sha256
-        .convert(utf8.encode(_pinController.text))
-        .toString();
+    final inputHash =
+        sha256.convert(utf8.encode(_pinController.text)).toString();
     if (inputHash == storedHash) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => NotesListScreen()),
       );
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Wrong PIN')));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Wrong PIN')),
+      );
     }
   }
 
@@ -65,23 +76,22 @@ class _AuthScreenState extends State<AuthScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Set PIN'),
+        title: const Text('Set PIN'),
         content: TextField(
           controller: _pinController,
           obscureText: true,
-          decoration: InputDecoration(labelText: 'Enter 4-6 digit PIN'),
+          decoration: const InputDecoration(labelText: 'Enter 4-6 digit PIN'),
         ),
         actions: [
           TextButton(
             onPressed: () async {
-              final hash = sha256
-                  .convert(utf8.encode(_pinController.text))
-                  .toString();
+              final hash =
+                  sha256.convert(utf8.encode(_pinController.text)).toString();
               await SecureStorageService.savePinHash(hash);
               Navigator.pop(context);
               _verifyPin();
             },
-            child: Text('Save'),
+            child: const Text('Save'),
           ),
         ],
       ),
@@ -96,26 +106,38 @@ class _AuthScreenState extends State<AuthScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_isBiometricSupported) ...[
+            if (_isBiometricAvailable) ...[
               ElevatedButton.icon(
                 onPressed: _authenticateWithBiometrics,
-                icon: Icon(Icons.fingerprint),
-                label: Text('Unlock with Biometrics'),
+                icon: const Icon(Icons.fingerprint),
+                label: const Text('Unlock with Biometrics'),
               ),
-              SizedBox(height: 20),
-              Text('OR'),
+              const SizedBox(height: 20),
+              if (_biometricAttempted && _biometricError != null) ...[
+                Text(
+                  _biometricError!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ] else ...[
+              TextField(
+                controller: _pinController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Enter PIN'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _verifyPin,
+                child: const Text('Unlock with PIN'),
+              ),
             ],
-            SizedBox(height: 20),
-            TextField(
-              controller: _pinController,
-              obscureText: true,
-              decoration: InputDecoration(labelText: 'Enter PIN'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _verifyPin,
-              child: Text('Unlock with PIN'),
-            ),
+            if (!_isBiometricAvailable) const SizedBox(height: 20),
+            if (!_isBiometricAvailable)
+              const Text(
+                'Biometric authentication is not available. Please unlock with PIN.',
+                textAlign: TextAlign.center,
+              ),
           ],
         ),
       ),
