@@ -23,7 +23,11 @@ class BiometricService {
   }
 
   Future<bool> isBiometricAvailable() async {
+    final canCheck = await canCheckBiometrics();
+    print('Can check biometrics: $canCheck');
+    if (!canCheck) return false;
     final available = await getAvailableBiometrics();
+    print('Available biometrics: $available');
     return available.isNotEmpty;
   }
 

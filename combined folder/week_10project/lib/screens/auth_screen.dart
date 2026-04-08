@@ -120,24 +120,17 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
                 const SizedBox(height: 20),
               ],
-            ] else ...[
-              TextField(
-                controller: _pinController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Enter PIN'),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _verifyPin,
-                child: const Text('Unlock with PIN'),
-              ),
             ],
-            if (!_isBiometricAvailable) const SizedBox(height: 20),
-            if (!_isBiometricAvailable)
-              const Text(
-                'Biometric authentication is not available. Please unlock with PIN.',
-                textAlign: TextAlign.center,
-              ),
+            TextField(
+              controller: _pinController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Enter PIN'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _verifyPin,
+              child: const Text('Unlock with PIN'),
+            ),
           ],
         ),
       ),
