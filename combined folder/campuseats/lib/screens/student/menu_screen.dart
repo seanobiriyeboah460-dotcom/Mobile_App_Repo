@@ -8,7 +8,6 @@ import '../../models/cart_item_model.dart';
 import '../../screens/student/cart_screen.dart';
 import '../../screens/student/order_history_screen.dart';
 import '../../screens/student/profile_screen.dart';
-import '../../screens/auth/login_screen.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -34,13 +33,20 @@ class _MenuBody extends StatelessWidget {
     final authVm = context.watch<AuthViewModel>();
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF1F8F1),
       appBar: AppBar(
-        title: const Text('Campus Eats'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+        title: const Text(
+          'Campus Eats',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        elevation: 0,
         actions: [
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart),
+                icon: const Icon(Icons.shopping_cart_outlined),
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CartScreen()),
@@ -52,7 +58,7 @@ class _MenuBody extends StatelessWidget {
                   top: 6,
                   child: CircleAvatar(
                     radius: 8,
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.orange,
                     child: Text(
                       '${cartVm.itemCount}',
                       style: const TextStyle(fontSize: 10, color: Colors.white),
@@ -72,7 +78,7 @@ class _MenuBody extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Icons.person_outline),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ProfileScreen()),
@@ -82,52 +88,88 @@ class _MenuBody extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Search bar
-          Padding(
-            padding: const EdgeInsets.all(12),
+          // Green header band with search
+          Container(
+            color: Colors.green.shade700,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Search menu...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
               onChanged: menuVm.setSearch,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Search menu...',
+                hintStyle: TextStyle(color: Colors.green.shade200),
+                prefixIcon: Icon(Icons.search, color: Colors.green.shade200),
+                filled: true,
+                fillColor: Colors.green.shade600,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
           ),
-          // Category filter
-          SizedBox(
-            height: 40,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              children: MenuScreen.categories.map((cat) {
-                final selected = menuVm.selectedCategory == cat;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(cat),
-                    selected: selected,
-                    onSelected: (_) => menuVm.setCategory(cat),
-                  ),
-                );
-              }).toList(),
+          // Category chips
+          Container(
+            color: Colors.green.shade50,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: MenuScreen.categories.map((cat) {
+                  final selected = menuVm.selectedCategory == cat;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(cat),
+                      selected: selected,
+                      selectedColor: Colors.green.shade700,
+                      labelStyle: TextStyle(
+                        color: selected ? Colors.white : Colors.green.shade800,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      onSelected: (_) => menuVm.setCategory(cat),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
-          const SizedBox(height: 8),
           // Menu list
           Expanded(
             child: StreamBuilder(
               stream: menuVm.menuStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.green.shade700,
+                    ),
+                  );
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 final items = menuVm.filter(snapshot.data ?? []);
                 if (items.isEmpty) {
-                  return const Center(child: Text('No items found'));
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.no_food,
+                          size: 64,
+                          color: Colors.green.shade200,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No items found',
+                          style: TextStyle(color: Colors.green.shade400),
+                        ),
+                      ],
+                    ),
+                  );
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.all(12),
@@ -150,65 +192,156 @@ class _MenuItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartVm = context.read<CartViewModel>();
+    final inStock = item.stock > 0;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            item.imageUrl,
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.fastfood, size: 40),
-          ),
-        ),
-        title: Text(
-          item.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
           children: [
-            Text(
-              item.description,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              'GHS ${item.price.toStringAsFixed(2)}',
-              style: const TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.bold,
+            // Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                item.imageUrl,
+                width: 75,
+                height: 75,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 75,
+                  height: 75,
+                  color: Colors.green.shade50,
+                  child: Icon(
+                    Icons.fastfood,
+                    size: 36,
+                    color: Colors.green.shade300,
+                  ),
+                ),
               ),
             ),
-            Text(
-              item.stock > 0 ? 'In stock: ${item.stock}' : 'Out of stock',
-              style: TextStyle(
-                color: item.stock > 0 ? Colors.green : Colors.red,
-                fontSize: 12,
+            const SizedBox(width: 12),
+            // Details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Text(
+                        'GHS ${item.price.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: inStock
+                              ? Colors.green.shade50
+                              : Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: inStock
+                                ? Colors.green.shade300
+                                : Colors.red.shade200,
+                          ),
+                        ),
+                        child: Text(
+                          inStock ? 'Stock: ${item.stock}' : 'Out of stock',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: inStock
+                                ? Colors.green.shade700
+                                : Colors.red.shade600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (item.ratingCount > 0) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          size: 14,
+                          color: Colors.amber.shade600,
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          item.avgRating.toStringAsFixed(1),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        Text(
+                          ' (${item.ratingCount})',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            // Add button
+            const SizedBox(width: 8),
+            GestureDetector(
+              onTap: inStock
+                  ? () {
+                      cartVm.addItem(
+                        CartItem(
+                          itemId: item.id,
+                          name: item.name,
+                          price: item.price,
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${item.name} added to cart'),
+                          backgroundColor: Colors.green.shade700,
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  : null,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: inStock ? Colors.green.shade700 : Colors.grey.shade300,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 20),
               ),
             ),
           ],
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.add_circle, color: Colors.orange),
-          onPressed: item.stock > 0
-              ? () {
-                  cartVm.addItem(
-                    CartItem(
-                      itemId: item.id,
-                      name: item.name,
-                      price: item.price,
-                    ),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${item.name} added to cart')),
-                  );
-                }
-              : null,
-        ),
-        isThreeLine: true,
       ),
     );
   }
