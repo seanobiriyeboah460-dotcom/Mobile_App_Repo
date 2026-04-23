@@ -40,7 +40,7 @@ class ManageMenuScreen extends StatelessWidget {
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, _, _) =>
                               const Icon(Icons.fastfood, size: 40),
                         ),
                       ),
@@ -168,7 +168,7 @@ class ManageMenuScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   decoration: const InputDecoration(labelText: 'Category'),
                   items: ['Breakfast', 'Lunch', 'Snacks']
                       .map((c) => DropdownMenuItem(value: c, child: Text(c)))

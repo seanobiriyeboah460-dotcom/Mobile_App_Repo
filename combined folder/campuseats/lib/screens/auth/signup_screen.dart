@@ -21,7 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  Future<void> _signUp(BuildContext context) async {
+  Future<void> _signUp() async {
     final vm = context.read<AuthViewModel>();
     final success = await vm.signUp(
       _emailController.text.trim(),
@@ -150,7 +150,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: vm.isLoading ? null : () => _signUp(context),
+                      onPressed: vm.isLoading ? null : () => _signUp(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green.shade700,
                         foregroundColor: Colors.white,

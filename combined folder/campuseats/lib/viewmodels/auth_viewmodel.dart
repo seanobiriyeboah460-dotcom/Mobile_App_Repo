@@ -36,7 +36,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       currentUser = await _service.login(email, password);
       return true;
-    } on Exception catch (e) {
+    } catch (e) {
       errorMessage = _friendlyError(e.toString());
       return false;
     } finally {
@@ -64,7 +64,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       currentUser = await _service.signUp(email, password);
       return true;
-    } on Exception catch (e) {
+    } catch (e) {
       errorMessage = _friendlyError(e.toString());
       return false;
     } finally {

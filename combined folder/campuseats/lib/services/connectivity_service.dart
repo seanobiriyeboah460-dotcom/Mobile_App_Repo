@@ -10,7 +10,7 @@ class ConnectivityService {
 
   void init() {
     _subscription = _connectivity.onConnectivityChanged.listen((result) {
-      if (result != ConnectivityResult.none) {
+      if (!result.contains(ConnectivityResult.none)) {
         _syncPendingOrders();
       }
     });

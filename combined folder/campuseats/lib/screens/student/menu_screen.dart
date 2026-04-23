@@ -210,7 +210,7 @@ class _MenuItemCard extends StatelessWidget {
                 width: 75,
                 height: 75,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 75,
                   height: 75,
                   color: Colors.green.shade50,

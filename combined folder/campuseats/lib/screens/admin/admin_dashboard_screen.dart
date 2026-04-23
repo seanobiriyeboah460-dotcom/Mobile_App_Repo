@@ -90,7 +90,7 @@ class _DashboardCard extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(20),
         leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.15),
+          backgroundColor: color.withValues(alpha: 0.15),
           radius: 28,
           child: Icon(icon, color: color, size: 28),
         ),

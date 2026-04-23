@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _login(BuildContext context) async {
+  Future<void> _login() async {
     final vm = context.read<AuthViewModel>();
     final success = await vm.login(
       _emailController.text.trim(),
@@ -170,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: vm.isLoading ? null : () => _login(context),
+                        onPressed: vm.isLoading ? null : () => _login(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green.shade700,
                           foregroundColor: Colors.white,
