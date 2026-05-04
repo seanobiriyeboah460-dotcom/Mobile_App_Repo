@@ -24,19 +24,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       appBar: AppBar(
         title: const Text('Transactions'),
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddTransactionScreen(userId: widget.userId),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
